@@ -1,0 +1,130 @@
+CREATING THE DB:
+-- Database: apollo
+
+-- DROP DATABASE IF EXISTS apollo;
+
+CREATE DATABASE apollo
+    WITH 
+    OWNER = postgres
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'en_US.utf8'
+    LC_CTYPE = 'en_US.utf8'
+    TABLESPACE = pg_default
+    CONNECTION LIMIT = -1;
+
+COFFEE TABLE:
+-- Table: public.Coffee
+
+-- DROP TABLE IF EXISTS public."Coffee";
+
+CREATE TABLE IF NOT EXISTS public."Coffee"
+(
+    "CoffeeID" bigint NOT NULL DEFAULT nextval('"Coffee_CoffeeID_seq"'::regclass),
+    "Name" character varying COLLATE pg_catalog."default",
+    "Description" text COLLATE pg_catalog."default",
+    CONSTRAINT "Coffee_pkey" PRIMARY KEY ("CoffeeID")
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public."Coffee"
+    OWNER to postgres;
+
+CUSTOMER TABLE:
+-- Table: public.Customer
+
+-- DROP TABLE IF EXISTS public."Customer";
+
+CREATE TABLE IF NOT EXISTS public."Customer"
+(
+    "CustomerID" bigint NOT NULL DEFAULT nextval('"Customer_CustomerID_seq"'::regclass),
+    "FirstName" character varying COLLATE pg_catalog."default",
+    "LastName" character varying COLLATE pg_catalog."default",
+    "StreetAddress" text COLLATE pg_catalog."default",
+    "Town" character varying COLLATE pg_catalog."default",
+    "PostCode" integer,
+    "EmailAddress" character varying COLLATE pg_catalog."default",
+    CONSTRAINT "Customer_pkey" PRIMARY KEY ("CustomerID")
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public."Customer"
+    OWNER to postgres;
+
+CUSTOMERORDER TABLE:
+-- Table: public.CustomerOrder
+
+-- DROP TABLE IF EXISTS public."CustomerOrder";
+
+CREATE TABLE IF NOT EXISTS public."CustomerOrder"
+(
+    "OrderID" bigint NOT NULL DEFAULT nextval('"CustomerOrder_OrderID_seq"'::regclass),
+    "Date" timestamp without time zone,
+    "CustomerID" bigint,
+    "DeliveryTime" text COLLATE pg_catalog."default",
+    CONSTRAINT "CustomerOrder_pkey" PRIMARY KEY ("OrderID"),
+    CONSTRAINT "CustomerID" FOREIGN KEY ("CustomerID")
+        REFERENCES public."Customer" ("CustomerID") MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public."CustomerOrder"
+    OWNER to postgres;
+
+ORDERITEM TABLE:
+-- Table: public.OrderItem
+
+-- DROP TABLE IF EXISTS public."OrderItem";
+
+CREATE TABLE IF NOT EXISTS public."OrderItem"
+(
+    "OrderItemID" bigint NOT NULL DEFAULT nextval('"OrderItem_OrderItemID_seq"'::regclass),
+    "OrderID" bigint,
+    "CoffeeID" bigint,
+    "Type" character varying COLLATE pg_catalog."default",
+    "Quantity" integer,
+    CONSTRAINT "OrderItem_pkey" PRIMARY KEY ("OrderItemID"),
+    CONSTRAINT "CoffeeID" FOREIGN KEY ("CoffeeID")
+        REFERENCES public."Coffee" ("CoffeeID") MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT "OrderID" FOREIGN KEY ("OrderID")
+        REFERENCES public."CustomerOrder" ("OrderID") MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT "Type" FOREIGN KEY ("CoffeeID", "Type")
+        REFERENCES public."Size" ("CoffeeID", "Type") MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public."OrderItem"
+    OWNER to postgres;
+
+SIZE TABLE:
+-- Table: public.Size
+
+-- DROP TABLE IF EXISTS public."Size";
+
+CREATE TABLE IF NOT EXISTS public."Size"
+(
+    "CoffeeID" bigint NOT NULL,
+    "Type" character varying COLLATE pg_catalog."default" NOT NULL,
+    "Cost" money,
+    CONSTRAINT "Size_pkey" PRIMARY KEY ("CoffeeID", "Type"),
+    CONSTRAINT "CoffeeID" FOREIGN KEY ("CoffeeID")
+        REFERENCES public."Coffee" ("CoffeeID") MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public."Size"
+    OWNER to postgres;

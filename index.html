@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Apollo Coffee</title>
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lora:400,400i,700,700i">
+    <link rel="stylesheet" href="assets/fonts/ionicons.min.css">
+    <link rel="stylesheet" href="assets/css/Contact-Form-Clean.css">
+    <link rel="stylesheet" href="assets/css/Login-Form-Clean.css">
+    <link rel="stylesheet" href="assets/css/Registration-Form-with-Photo.css">
+</head>
+
+<body style="background:linear-gradient(rgba(47, 23, 15, 0.65), rgba(47, 23, 15, 0.65)), url('assets/img/bg.jpg');">
+    <h1 class="text-center text-white d-none d-lg-block site-heading"><span class="text-primary site-heading-upper mb-3">Apollo Coffee&nbsp;</span><span class="site-heading-lower">Only the best..</span></h1>
+    <nav class="navbar navbar-dark navbar-expand-lg bg-dark py-lg-4" id="mainNav">
+        <div class="container"><a class="navbar-brand text-uppercase d-lg-none text-expanded" href="#">Brand</a><button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navbarResponsive"><span class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Coffee Registration</a></li>
+                    <li class="nav-item"><a class="nav-link" href="Order.html">Store</a></li>
+                    <li id="login" class="nav-item"><a class="nav-link" href="Login.html">Login</a></li>
+                    <li id="logout" class="nav-item" onclick="logout()"><a class="nav-link">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <section class="page-section clearfix">
+        <div class="container">
+            <div class="intro"></div>
+        </div>
+    </section>
+    <section class="page-section cta">
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-9 mx-auto">
+                    <section class="contact-clean">
+                        <form id="coffeeForm" method="post">
+                            <h2 class="text-center">Admin Coffee Registration</h2>
+                            <div class="mb-3"><input class="form-control" type="text" name="name" placeholder="Name"></div>
+                            <div class="mb-3"><input class="form-control" type="text" name="description" placeholder="Description"></div>
+                            <div class="mb-3"><input class="form-control" type="text" name="size" placeholder="Size"></div>
+                            <div class="mb-3"><input class="form-control" type="number" name="price" placeholder="Price"></div>
+                            <div class="mb-3"></div>
+                            <div class="mb-3"><button class="btn btn-primary" type="submit">List Coffee</button></div>
+                        </form>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer class="text-center footer text-faded py-5">
+        <div class="container">
+            <p class="m-0 small">Copyright&nbsp;©&nbsp;Apollo 2021</p>
+        </div>
+    </footer>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="assets/js/current-day.js"></script>
+
+    <script>
+        document.getElementById('coffeeForm').onsubmit = (event) => {
+            event.preventDefault();
+            const form = event.target;
+            sendData({
+                name: form['name'].value,
+                description: form['description'].value,
+                size: form['size'].value,
+                price: form['price'].value,
+            })
+            window.alert("Coffee has been successfully listed!")
+        };
+
+        function sendData(data){
+            fetch("http://localhost:3300/Coffee", { 
+                method: "POST", // POST route
+                headers: {
+                    "Content-Type": "application/json", // we're using JSON as our body
+                },
+                body: JSON.stringify(data), // request body is JSON (must be serializable so we stringify it)
+            }).then(res => {
+                    res.json().then(e => {
+                        console.log(e)
+                    })
+                }
+            ).catch(err => {
+                console.error(err);
+            })
+
+        }
+        
+        
+        </script>
+<script>
+    let customer = window.localStorage.getItem('customer')
+    if (customer) {
+        customer = JSON.parse(customer);
+        document.getElementById('login').hidden = true;
+    } else {
+        document.getElementById('logout').hidden = true;
+    }
+
+    function logout() {
+        window.localStorage.removeItem('customer')
+        window.location = './Login.html'
+    }
+</script>
+</body>
+
+</html>
